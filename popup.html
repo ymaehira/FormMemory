@@ -1,0 +1,36 @@
+﻿<link rel="stylesheet" type="text/css" href="/css/all.css">
+<!- https://css-tricks.com/examples/ButtonMaker , http://www.cssdrive.com/css3button/ ->
+<script src="/js/jquery-2.1.3.min.js"></script>
+<script src="/js/ecl.js"></script>
+<script src="/js/popup.js"></script>
+
+<div id="top" style="width: 500px;">
+
+<div id="recordStatusView">
+</div>
+
+<div style="margin-top: 30px; width: 500px;">
+  <div>
+    <input type="button" id="setData" value="以下のデータをフォームへ挿入" class="button-insert" />
+    <input type="button" id="getData" value="現在の入力内容を取得" style="float: right; margin-top: 13px;; font-size:80%;" />
+  </div>
+  <div id="formDataParent" style="margin-top: 5px;"><textarea id="formData" style="width: 500px; height: 200px;"></textarea></div>
+  <span>過去の入力履歴 : </span>
+  <select id="formHistory" style="width: 180px;">
+    <option value="dummy"></option>
+  </select>
+<div>
+
+<div style="margin-top: 30px;">
+  <input type="text" id="postData" style="width: 300px;" placeholder="POSTデータ(& 区切り) を入力してください" />
+  <select id="codeType">
+    <option value="UTF-8">UTF-8</option>
+    <option value="Shift_JIS">Shift_JIS</option>
+    <option value="EUC-JP">EUC-JP</option>
+    <option value="Unicode">Unicode</option>
+    <option value="unknown">パルプンテ</option>
+  </select>
+  <input type="button" id="convertToJson" value="JSONに変換" />
+</div>
+
+</div>

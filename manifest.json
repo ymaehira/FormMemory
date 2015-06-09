@@ -1,0 +1,64 @@
+﻿// https://developer.chrome.com/extensions
+// https://developer.chrome.com/extensions/manifestVersion
+// https://developer.chrome.com/extensions/messaging Message Passing
+// https://support.google.com/chrome/a/answer/2714278?hl=ja
+// http://www.koikikukan.com/archives/2014/06/03-012345.php
+// http://takuya-1st.hatenablog.jp/entry/2014/11/04/001449
+// http://qiita.com/ororog/items/146b7cdac85a48690c1e clipboard にコピー
+// http://qiita.com/liubin/items/4112dee63c2c79cd3205 content_scriptsから設定情報を読み込む
+// http://www.junoe.jp/downloads/itoh/enc_js.shtml URLエンコード
+// http://lightbox.on.coocan.jp/html/fontImage.php フリーフォントで簡単ロゴ作成
+// https://css-tricks.com/examples/ButtonMaker/ CSS3ボタン作成
+
+{
+  "name": "FormMemory",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "フォームに入力したデータをJSONで取得できます。またJSONやPOSTデータを指定して、フォームを自動で埋めることができます。",
+  
+  "icons": {
+    "16": "img/logo.png",
+    "48": "img/logo.png",
+    "128": "img/logo.png"
+  },
+
+  "background": {
+    "scripts": [
+      "js/jquery-2.1.3.min.js", "js/background.js"
+    ]
+  },
+
+  "options_page": "options.html",
+
+  "content_scripts": [
+    {
+      "matches": [ "<all_urls>" ],
+      "js": [ "js/jquery-2.1.3.min.js", "js/ecl.js", "js/content-script.js"] // 依存するライブラリを先に記載する必要がある
+    }
+  ],
+
+  "browser_action": {
+    "default_icon": "img/logo.png",
+    "default_title": "FormMemory",
+    "default_popup": "popup.html"
+  },
+
+  "commands": {
+    "historyBack": {
+      "suggested_key": {
+        "default": "Ctrl+Up"
+      },
+      "description": "前の履歴"
+    },
+    "historyForward": {
+      "suggested_key": {
+        "default": "Ctrl+Down"
+      },
+      "description": "次の履歴"
+    }
+  },
+
+  "permissions": [
+    "<all_urls>", "tabs", "webRequest", "webRequestBlocking"
+  ]
+}

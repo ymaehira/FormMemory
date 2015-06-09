@@ -1,0 +1,41 @@
+﻿<script src="js/jquery-2.1.3.min.js"></script>
+<script src="js/options.js"></script>
+
+<div>
+  <h1>インポート</h1>
+  
+  <div>
+    <div id="importArea">
+      <div><input type="button" id="doImport" value="実行"></div>
+      <div>
+        <textarea id="importText" style="width: 500px; height: 300px;"></textarea>
+      </div>
+    </div>
+    <div id="importMessage"></div>
+<!--
+    <div style="float:left">
+      <div style="margin-top: 120px; margin-left: 30px;">→入力されたら自動でドメイン一覧を表示。選択したものだけをインポート</div>
+    </div>
+-->
+  </div>
+</div>
+
+<div style="clear: both;"></div>
+
+<div>
+  <h1>エクスポート</h1>
+  <div id="exportTargetDomains"></div>
+  <br>
+  <input type="button" id="doExport" value="実行">
+  <div>
+    <textarea id="exportText" style="width: 500px; height: 300px;"></textarea>
+  </div>
+</div>
+
+<p style="margin-top: 60px;" >ローカルストレージに保存されているデータのサイズ</p>
+<div id="displayDataSize">
+</div>
+
+<div style="margin-top: 60px;">
+  <input type="button" id="clearRecord" value="ローカルストレージをクリア" />
+</div>

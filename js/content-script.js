@@ -146,19 +146,25 @@ function setDataToBody(json_string, body) {
 // param[]=1&param[]=2&... のような形式にも対応
 // 同じ name で、配列形式でもないのがあったら諦める。最後に取得した値になるはず。
 function getInputData() {
-  var res = getInputData2();
+  let res = getInputData2()
+
+  let body
+  let frame
 
   for (var i=0; top.frames.length > i; i++) {
+    body = ""
+
     try {
-      const body = top.frames[i].document.body
+      frame = top.frames[i]
+      body = frame.document.body
     } catch(error) {
-      // クロスオリジンへアクセスしようとすると例外が発生するが、そのときは無視
-      console.log(error);
+      console.log(error)
     }
+
     res = Object.assign(res, getInputDataFromBody(body))
   }
   
-  return res;
+  return res
 }
 
 function getInputData2() {

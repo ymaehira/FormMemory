@@ -149,7 +149,13 @@ function getInputData() {
   var res = getInputData2();
 
   for (var i=0; top.frames.length > i; i++) {
-    res = Object.assign(res, getInputDataFromBody(top.frames[i].document.body))
+    try {
+      const body = top.frames[i].document.body
+    } catch(error) {
+      // クロスオリジンへアクセスしようとすると例外が発生するが、そのときは無視
+      console.log(error);
+    }
+    res = Object.assign(res, getInputDataFromBody(body))
   }
   
   return res;

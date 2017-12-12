@@ -298,14 +298,15 @@ function setFormDataFromHistory(command) {
   // 現在アクティブなタブのドメインの履歴データがあるかを確認
   // 存在する履歴データのサイズを超えないようにする
   /////////////////////////////////////////////////// 未実装 //////////////////////////////////////////////////
+  
   var data = {xxx:[]};
   var max = data.xxx.length;
 
   switch (command) {
-    case 'back':
+    case 'historyBack':
       historyNum > 0 ? historyNum-- : null;
       break;
-    case 'next':
+    case 'historyForward':
       historyNum < max ? historyNum++ : null;
       break;
   }

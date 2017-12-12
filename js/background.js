@@ -293,28 +293,27 @@ function formatDate(date) {
 
 // キーバインドから要求された履歴データをフォームにセットする
 function setFormDataFromHistory(command) {
-  var historyNum = localStorage.getItem("historyNum") || 0;
-
-  // 現在アクティブなタブのドメインの履歴データがあるかを確認
-  // 存在する履歴データのサイズを超えないようにする
-  /////////////////////////////////////////////////// 未実装 //////////////////////////////////////////////////
-  
-  var data = {xxx:[]};
-  var max = data.xxx.length;
-
-  switch (command) {
-    case 'historyBack':
-      historyNum > 0 ? historyNum-- : null;
-      break;
-    case 'historyForward':
-      historyNum < max ? historyNum++ : null;
-      break;
-  }
-
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    const tab_domain = tabs[0].url.split('/')[2]
+    const data_set = getDomainDataSet(tab_domain)
+    var url = tabs[0].url.split('?')[0]
+    const records = data_set[url]
+    var historyNum = localStorage.getItem("historyNum") || 0
+
+    switch (command) {
+      case 'historyBack':
+        historyNum > 0 ? historyNum-- : 'nothing'
+        break;
+      case 'historyForward':
+        historyNum < (records.length-1) ? historyNum++ : 'nothing'
+        break;
+    }
+    
+    localStorage.setItem("historyNum", historyNum)
+
     chrome.tabs.sendMessage(
       tabs[0].id,
-      {method: 'setData', data: data.xxx[historyNum]},
+      {method: 'setData', data: JSON.stringify(records[historyNum].formData)},
       function(response) {}
     );
   });

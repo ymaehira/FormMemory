@@ -15,12 +15,20 @@ chrome.runtime.onMessage.addListener(
 // イベントハンドラの発火も考慮
 // テストサイト http://192.168.13.50/maehira/form_test/text.html
 function setData(json_string) {
+  var res = setData2(json_string);
+
+  for (var i=0; top.frames.length > i; i++) {
+    setDataToBody(json_string, top.frames[i].document.body);
+  }
+}
+
+function setData2(json_string) {
   if (json_string == null || json_string == "") {return};
   
   var data = JSON.parse(json_string);
   var arrayCheckRegexp = /\[\]$/;
   
-  $(":text,:password,textarea,select").each(function(i, obj) {
+  $("input[type='text'],input[type='password'],textarea,select").each(function(i, obj) {
     if (data[$(this).attr('name')] == undefined) {return;} // nextと同等
     
     if ($(this).attr('name').match(arrayCheckRegexp) == null) {
@@ -31,7 +39,7 @@ function setData(json_string) {
     
   });
   
-  $(":radio").each(function(i, obj) {
+  $("input[type='radio']").each(function(i, obj) {
     if (data[$(this).attr('name')] == undefined) {return;} // nextと同等
     
     if ($(this).attr('name').match(arrayCheckRegexp) == null) {
@@ -56,7 +64,67 @@ function setData(json_string) {
     }
   });
 
-  $(":checkbox").each(function(i, obj) {
+  $("input[type='checkbox']").each(function(i, obj) {
+    if (data[$(this).attr('name')] != undefined) {
+      if ($(this).attr('name').match(arrayCheckRegexp) == null) {
+        if (data[$(this).attr('name')] != $(this).prop('checked')) {
+          $(this).trigger('change').trigger('click');
+        }
+        $(this).prop("checked", data[$(this).attr('name')] ? 'checked' : false);
+      } else {
+        var checkStatus = data[$(this).attr('name')].shift();
+        if (checkStatus != $(this).prop('checked')) {
+          $(this).trigger('change').trigger('click');
+        }
+        $(this).prop("checked", checkStatus ? 'checked' : false);
+      }
+    }
+  });
+};
+
+function setDataToBody(json_string, body) {
+  if (json_string == null || json_string == "") {return};
+  
+  var data = JSON.parse(json_string);
+  var arrayCheckRegexp = /\[\]$/;
+  
+  $("input[type='text'],input[type='password'],textarea,select", body).each(function(i, obj) {
+    if (data[$(this).attr('name')] == undefined) {return;} // nextと同等
+    
+    if ($(this).attr('name').match(arrayCheckRegexp) == null) {
+      $(this).val(data[$(this).attr('name')]);
+    } else {
+      $(this).val(data[$(this).attr('name')].shift());
+    }
+    
+  });
+  
+  $("input[type='radio']", body).each(function(i, obj) {
+    if (data[$(this).attr('name')] == undefined) {return;} // nextと同等
+    
+    if ($(this).attr('name').match(arrayCheckRegexp) == null) {
+      if (data[$(this).attr('name')] == $(this).val()) {
+        if (!$(this).prop('checked')) {
+          $(this).trigger('change').trigger('click');
+        }
+        $(this).prop("checked", 'checked');
+      } else {
+        $(this).prop("checked", false);
+      }
+    } else {
+      var dataVal = data[$(this).attr('name')].shift();
+      if (dataVal == $(this).val()) {
+        if (!$(this).prop('checked')) {
+          $(this).trigger('change').trigger('click');
+        }
+        $(this).prop("checked", 'checked');
+      } else {
+        $(this).prop("checked", false);
+      }
+    }
+  });
+
+  $("input[type='checkbox']", body).each(function(i, obj) {
     if (data[$(this).attr('name')] != undefined) {
       if ($(this).attr('name').match(arrayCheckRegexp) == null) {
         if (data[$(this).attr('name')] != $(this).prop('checked')) {
@@ -78,10 +146,20 @@ function setData(json_string) {
 // param[]=1&param[]=2&... のような形式にも対応
 // 同じ name で、配列形式でもないのがあったら諦める。最後に取得した値になるはず。
 function getInputData() {
+  var res = getInputData2();
+
+  for (var i=0; top.frames.length > i; i++) {
+    res = Object.assign(res, getInputDataFromBody(top.frames[i].document.body))
+  }
+  
+  return res;
+}
+
+function getInputData2() {
   var res = {};
   var arrayCheckRegexp = /\[\]$/;
   
-  $(":text,:password,textarea,select").each(function(i, obj) {
+  $("input[type='text'],input[type='password'],textarea,select").each(function(i, obj) {
     if ($(this).attr('name').match(arrayCheckRegexp) == null) {
       res[$(this).attr('name')] = $(this).val();
     } else {
@@ -90,7 +168,7 @@ function getInputData() {
     }
   });
 
-  $(":radio:checked").each(function(i, obj) {
+  $("input[type='radio']:checked").each(function(i, obj) {
     if ($(this).attr('name').match(arrayCheckRegexp) == null) {
       res[$(this).attr('name')] = $(this).val();
     } else {
@@ -99,7 +177,7 @@ function getInputData() {
     }
   });
   
-  $(":checkbox").each(function(i, obj) {
+  $("input[type='checkbox']").each(function(i, obj) {
     if ($(this).attr('name').match(arrayCheckRegexp) == null) {
       res[$(this).attr('name')] = $(this).prop('checked');
     } else {
@@ -107,7 +185,41 @@ function getInputData() {
       res[$(this).attr('name')].push($(this).prop('checked'));
     }
   });
+
+  return res;
+}
+
+function getInputDataFromBody(body) {
+  var res = {};
+  var arrayCheckRegexp = /\[\]$/;
   
+  $("input[type='text'],input[type='password'],textarea,select", body).each(function(i, obj) {
+    if ($(this).attr('name').match(arrayCheckRegexp) == null) {
+      res[$(this).attr('name')] = $(this).val();
+    } else {
+      res[$(this).attr('name')] = res[$(this).attr('name')] || [];
+      res[$(this).attr('name')].push($(this).val());
+    }
+  });
+
+  $("input[type='radio']:checked", body).each(function(i, obj) {
+    if ($(this).attr('name').match(arrayCheckRegexp) == null) {
+      res[$(this).attr('name')] = $(this).val();
+    } else {
+      res[$(this).attr('name')] = res[$(this).attr('name')] || [];
+      res[$(this).attr('name')].push($(this).val());
+    }
+  });
+  
+  $("input[type='checkbox']", body).each(function(i, obj) {
+    if ($(this).attr('name').match(arrayCheckRegexp) == null) {
+      res[$(this).attr('name')] = $(this).prop('checked');
+    } else {
+      res[$(this).attr('name')] = res[$(this).attr('name')] || [];
+      res[$(this).attr('name')].push($(this).prop('checked'));
+    }
+  });
+
   return res;
 }
 

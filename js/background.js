@@ -30,11 +30,11 @@ chrome.webRequest.onBeforeRequest.addListener(function(details){
     // 送信されたリクエストが、記録対象ドメインを表示中のタブからの送信でない場合は、なにもせずリターン
     if (tabs[0].id != details.tabId) {return false;}
 
-    // iframeや、画像、JS、CSS、フラッシュ へのリクエストは除外 ("main_frame" と "xmlhttprequest" のみに置き換えてもよさそう)
-    if (details.type == 'sub_frame' || details.type == 'script' || details.type == 'image' || details.type == 'stylesheet' || details.type == 'other') {return false;}
+    // 画像、JS、CSS、フラッシュ へのリクエストは除外 ("main_frame" と "xmlhttprequest" と "sub_frame" のみに置き換えてもよさそう)
+    if (details.type == 'script' || details.type == 'image' || details.type == 'stylesheet' || details.type == 'other') {return false;}
 
     // 画面遷移したタイミングで、キーバインド操作で インクリメント/デクリメント した履歴移動データをクリアする
-    if (details.type == 'main_frame') {
+    if (details.type == 'main_frame' || details.type == 'sub_frame') {
       localStorage.removeItem("historyNum");
     }
 
